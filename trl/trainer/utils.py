@@ -42,6 +42,7 @@ from transformers import (
     PreTrainedModel,
     is_comet_available,
     is_trackio_available,
+    AutoModelForCausalLM,
 )
 from transformers.modeling_outputs import BaseModelOutputWithPast, CausalLMOutputWithPast
 from transformers.models.auto.auto_factory import _BaseAutoModelClass
@@ -1022,9 +1023,12 @@ def create_model_from_path(
         )
     kwargs["device_map"] = kwargs.get("device_map", "auto")
     if architecture is None:
-        config = AutoConfig.from_pretrained(model_id)
-        architecture = getattr(transformers, config.architectures[0])
-    model = architecture.from_pretrained(model_id, **kwargs)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            **kwargs,
+        )
+    else:
+        model = architecture.from_pretrained(model_id, **kwargs)
     return model
 
 
